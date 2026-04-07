@@ -4,7 +4,7 @@ A specialized Claude Code workspace for creating long-form, SEO-optimized blog c
 
 ## Overview
 
-SEO Machine is built on Claude Code and provides:
+SEO Machine is built on Claude Code and also natively supports the **Antigravity (ComarAI)** agent ecosystem, providing:
 - **Custom Commands**: `/research`, `/write`, `/rewrite`, `/analyze-existing`, `/optimize`, `/performance-review`, `/publish-draft`, `/article`, `/priorities`, plus specialized research and landing page commands
 - **Specialized Agents**: Content analyzer, SEO optimization, meta element creation, internal linking, keyword mapping, editor, performance analysis, headline generator, CRO analyst, landing page optimizer
 - **Marketing Skills**: 26 marketing skills for copywriting, CRO, A/B testing, email sequences, pricing strategy, and more

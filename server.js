@@ -13,6 +13,9 @@ const STORE_PATH = join(DATA_DIR, 'trial-store.json');
 const DAY_MS = 24 * 60 * 60 * 1000;
 const ANON_LIMIT = 3;
 const EMAIL_LIMIT = 8;
+const OPENAI_BASE_URL = (process.env.OPENAI_BASE_URL || process.env.CODEX_BASE_URL || 'https://9router.phamphunguyenhung.com/v1').replace(/\/$/, '');
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY || process.env.NINEROUTER_API_KEY || process.env.ROUTER_API_KEY || '';
+const OPENAI_MODEL = process.env.OPENAI_MODEL || process.env.SEO_TRIAL_MODEL || 'cx/gpt-5.3-codex-none';
 
 mkdirSync(DATA_DIR, { recursive: true });
 
@@ -145,7 +148,43 @@ function generateMeta(topic) {
   return { titles, descriptions };
 }
 
-function generateBrief(keyword) {
+async function callRouterJson(system, user, fallback) {
+  if (!OPENAI_API_KEY) return fallback();
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 18_000);
+  try {
+    const response = await fetch(`${OPENAI_BASE_URL}/chat/completions`, {
+      method: 'POST',
+      signal: controller.signal,
+      headers: {
+        authorization: `Bearer ${OPENAI_API_KEY}`,
+        'content-type': 'application/json'
+      },
+      body: JSON.stringify({
+        model: OPENAI_MODEL,
+        messages: [
+          { role: 'system', content: system },
+          { role: 'user', content: user }
+        ],
+        temperature: 0.4,
+        max_tokens: 1200,
+        stream: false,
+        response_format: { type: 'json_object' }
+      })
+    });
+    if (!response.ok) return fallback();
+    const data = await response.json();
+    const content = data?.choices?.[0]?.message?.content || '';
+    const parsed = JSON.parse(content);
+    return { ...parsed, aiPowered: true, model: OPENAI_MODEL };
+  } catch {
+    return fallback();
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+function generateBriefLocal(keyword) {
   const clean = requireText(keyword, 2, 120, 'Keyword');
   const intent = /giá|mua|dịch vụ|tool|phần mềm|agency/i.test(clean)
     ? 'Commercial investigation'
@@ -179,6 +218,62 @@ function generateBrief(keyword) {
       'Case study hoặc landing page có CTA'
     ],
     meta: generateMeta(clean)
+  };
+}
+
+async function generateBrief(keyword) {
+  const clean = requireText(keyword, 2, 120, 'Keyword');
+  const system = [
+    'Bạn là SEO strategist cho thị trường Việt Nam.',
+    'Trả về JSON hợp lệ, không markdown.',
+    'Schema: {"keyword": string, "intent": string, "audience": string, "angle": string, "outline": string[], "questions": string[], "internalLinks": string[], "meta": {"titles": string[], "descriptions": string[]}}.',
+    'outline 8 mục, questions 4 mục, internalLinks 3 mục, meta titles 5 mục, descriptions 5 mục.',
+    'Visible copy phải là tiếng Việt có dấu, cụ thể, không chung chung.'
+  ].join(' ');
+  const user = `Tạo content brief SEO cho keyword: ${clean}`;
+  const result = await callRouterJson(system, user, () => generateBriefLocal(clean));
+  return normalizeBrief(result, clean);
+}
+
+async function generateMetaAi(topic) {
+  const clean = requireText(topic, 2, 160, 'Chủ đề');
+  const system = [
+    'Bạn là SEO copywriter.',
+    'Trả về JSON hợp lệ, không markdown.',
+    'Schema: {"titles": string[], "descriptions": string[]}.',
+    'Tạo đúng 5 title và 5 meta description bằng tiếng Việt có dấu.',
+    'Title nên dưới 70 ký tự. Description nên 130-165 ký tự.'
+  ].join(' ');
+  const user = `Tạo title/meta cho chủ đề: ${clean}`;
+  const result = await callRouterJson(system, user, () => generateMeta(clean));
+  return normalizeMeta(result, clean);
+}
+
+function normalizeMeta(value, fallbackTopic) {
+  const fallback = generateMeta(fallbackTopic);
+  const titles = Array.isArray(value?.titles) ? value.titles.map(String).filter(Boolean).slice(0, 5) : fallback.titles;
+  const descriptions = Array.isArray(value?.descriptions) ? value.descriptions.map(String).filter(Boolean).slice(0, 5) : fallback.descriptions;
+  return {
+    titles: titles.length ? titles : fallback.titles,
+    descriptions: descriptions.length ? descriptions : fallback.descriptions,
+    aiPowered: Boolean(value?.aiPowered),
+    model: value?.model || null
+  };
+}
+
+function normalizeBrief(value, fallbackKeyword) {
+  const fallback = generateBriefLocal(fallbackKeyword);
+  return {
+    keyword: String(value?.keyword || fallback.keyword),
+    intent: String(value?.intent || fallback.intent),
+    audience: String(value?.audience || fallback.audience),
+    angle: String(value?.angle || fallback.angle),
+    outline: Array.isArray(value?.outline) && value.outline.length ? value.outline.map(String).slice(0, 10) : fallback.outline,
+    questions: Array.isArray(value?.questions) && value.questions.length ? value.questions.map(String).slice(0, 6) : fallback.questions,
+    internalLinks: Array.isArray(value?.internalLinks) && value.internalLinks.length ? value.internalLinks.map(String).slice(0, 5) : fallback.internalLinks,
+    meta: normalizeMeta(value?.meta || fallback.meta, fallbackKeyword),
+    aiPowered: Boolean(value?.aiPowered),
+    model: value?.model || null
   };
 }
 
@@ -276,8 +371,8 @@ async function handleApi(req, res, path) {
   const usage = consumeUsage(req, session, email, tool);
   if (!usage.ok) return json(res, 429, { error: 'Bạn đã dùng hết lượt trial hôm nay.', limit: usage.limit, remaining: usage.remaining });
 
-  if (path === '/api/trial/meta') return json(res, 200, { usage, result: generateMeta(payload.topic) });
-  if (path === '/api/trial/brief') return json(res, 200, { usage, result: generateBrief(payload.keyword) });
+  if (path === '/api/trial/meta') return json(res, 200, { usage, result: await generateMetaAi(payload.topic) });
+  if (path === '/api/trial/brief') return json(res, 200, { usage, result: await generateBrief(payload.keyword) });
   if (path === '/api/trial/audit') return json(res, 200, { usage, result: await auditUrl(payload.url) });
   return json(res, 404, { error: 'Not found' });
 }

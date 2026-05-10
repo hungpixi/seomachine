@@ -112,6 +112,7 @@
     .result-empty { color: var(--muted); display: grid; place-items: center; min-height: 190px; text-align: center; line-height: 1.6; }
     .result-list { display: grid; gap: 10px; }
     .result-item { border: 1px solid var(--line); background: rgba(255,255,255,.035); border-radius: 8px; padding: 12px; color: #dff8ea; line-height: 1.5; }
+    .ai-badge { display: inline-flex; margin: 0 0 12px; padding: 7px 10px; border-radius: 8px; border: 1px solid rgba(88,226,154,.28); color: var(--green); background: rgba(88,226,154,.08); font-size: 12px; font-weight: 900; }
     .score { width: 96px; height: 96px; border-radius: 999px; display: grid; place-items: center; background: conic-gradient(var(--green) calc(var(--score) * 1%), rgba(255,255,255,.08) 0); margin-bottom: 14px; }
     .score span { width: 76px; height: 76px; border-radius: 999px; background: var(--surface); display: grid; place-items: center; font-size: 24px; font-weight: 900; }
     .checks { display: grid; gap: 8px; margin-top: 12px; }
@@ -276,6 +277,7 @@
     function renderBrief(result) {
       $('result').className = '';
       $('result').innerHTML = `
+        ${result.aiPowered ? `<div class="ai-badge">9Router AI · ${escapeHtml(result.model || 'active')}</div>` : '<div class="ai-badge">Fallback local</div>'}
         <h3>Brief cho: ${escapeHtml(result.keyword)}</h3>
         <p class="muted"><strong>Intent:</strong> ${escapeHtml(result.intent)} · ${escapeHtml(result.angle)}</p>
         ${renderList('Outline đề xuất', result.outline)}
@@ -286,7 +288,11 @@
 
     function renderMeta(result) {
       $('result').className = '';
-      $('result').innerHTML = `${renderList('Title gợi ý', result.titles)}${renderList('Meta description', result.descriptions)}`;
+      $('result').innerHTML = `
+        ${result.aiPowered ? `<div class="ai-badge">9Router AI · ${escapeHtml(result.model || 'active')}</div>` : '<div class="ai-badge">Fallback local</div>'}
+        ${renderList('Title gợi ý', result.titles)}
+        ${renderList('Meta description', result.descriptions)}
+      `;
     }
 
     async function runTool(button, path, payload, renderer) {

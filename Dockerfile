@@ -1,7 +1,18 @@
-FROM nginx:1.27-alpine
+FROM node:22-alpine
 
-COPY index.html /usr/share/nginx/html/index.html
-COPY README.md /usr/share/nginx/html/README.md
-COPY context /usr/share/nginx/html/context
+WORKDIR /app
+
+COPY package.json server.js index.html README.md ./
+COPY context ./context
+
+ENV NODE_ENV=production
+ENV PORT=80
+ENV DATA_DIR=/data
+
+RUN mkdir -p /data && addgroup -S appgroup && adduser -S appuser -G appgroup && chown -R appuser:appgroup /app /data
+
+USER appuser
 
 EXPOSE 80
+
+CMD ["node", "server.js"]

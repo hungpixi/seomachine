@@ -3,87 +3,323 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>SEO Machine | Content Research Workspace</title>
-  <meta name="description" content="SEO Machine helps research, plan, write, and optimize long-form SEO content with structured workflows and analytics-ready modules.">
+  <title>SEO Machine Trial | Dùng thử công cụ SEO nội dung</title>
+  <meta name="description" content="Dùng thử SEO Machine với audit URL, tạo content brief và sinh title/meta có giới hạn mỗi ngày.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     :root {
       color-scheme: dark;
-      --bg: #0a0f14;
-      --panel: #101922;
-      --text: #eef6f8;
-      --muted: #a7b5bb;
-      --line: #22313a;
-      --green: #44d19d;
-      --blue: #4db6ff;
-      --gold: #f4c95d;
+      --bg: #07100d;
+      --surface: #0d1915;
+      --panel: #10221c;
+      --panel-2: #132821;
+      --text: #f0fbf5;
+      --muted: #9db8ad;
+      --line: rgba(203, 245, 224, .14);
+      --green: #58e29a;
+      --cyan: #55c7e8;
+      --gold: #f3ce75;
+      --red: #ff817a;
+      --shadow: 0 22px 80px rgba(0, 0, 0, .36);
     }
     * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
     body {
       margin: 0;
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: linear-gradient(180deg, #071017 0%, var(--bg) 56%, #050709 100%);
-      color: var(--text);
       min-height: 100vh;
+      font-family: "Be Vietnam Pro", system-ui, sans-serif;
+      background:
+        radial-gradient(circle at 15% 0%, rgba(85, 199, 232, .16), transparent 32%),
+        radial-gradient(circle at 90% 12%, rgba(88, 226, 154, .14), transparent 30%),
+        linear-gradient(180deg, #06100d 0%, #07100d 48%, #040706 100%);
+      color: var(--text);
     }
-    main { width: min(1120px, calc(100% - 32px)); margin: 0 auto; padding: 48px 0; }
-    nav { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 72px; }
-    .brand { display: flex; align-items: center; gap: 12px; font-weight: 800; letter-spacing: .02em; }
-    .mark { width: 34px; height: 34px; border-radius: 8px; background: linear-gradient(135deg, var(--green), var(--blue)); }
-    .pill { color: var(--green); border: 1px solid rgba(68, 209, 157, .35); padding: 8px 12px; border-radius: 999px; font-size: 13px; }
-    .hero { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(280px, .85fr); gap: 44px; align-items: center; }
-    h1 { margin: 0 0 20px; font-size: clamp(42px, 7vw, 86px); line-height: .92; letter-spacing: 0; }
-    .lead { color: var(--muted); font-size: clamp(17px, 2vw, 21px); line-height: 1.65; max-width: 720px; margin: 0 0 30px; }
-    .actions { display: flex; flex-wrap: wrap; gap: 12px; }
-    a.button { color: #06120e; background: var(--green); text-decoration: none; font-weight: 800; border-radius: 8px; padding: 14px 18px; }
-    a.secondary { color: var(--text); background: transparent; border: 1px solid var(--line); }
-    .panel { background: rgba(16, 25, 34, .82); border: 1px solid var(--line); border-radius: 8px; padding: 24px; box-shadow: 0 18px 50px rgba(0,0,0,.25); }
-    .metric { display: grid; grid-template-columns: 42px 1fr; gap: 14px; padding: 16px 0; border-bottom: 1px solid var(--line); }
-    .metric:last-child { border-bottom: 0; }
-    .num { color: var(--gold); font-size: 26px; font-weight: 900; }
-    .metric strong { display: block; margin-bottom: 4px; }
-    .metric span { color: var(--muted); line-height: 1.45; }
-    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 52px; }
-    .card { background: rgba(255,255,255,.035); border: 1px solid var(--line); border-radius: 8px; padding: 22px; min-height: 170px; }
-    .card h2 { margin: 0 0 10px; font-size: 18px; }
-    .card p { margin: 0; color: var(--muted); line-height: 1.55; }
-    footer { color: #718189; font-size: 13px; margin-top: 52px; padding-top: 22px; border-top: 1px solid var(--line); }
-    @media (max-width: 860px) {
-      nav { margin-bottom: 44px; }
-      .hero, .grid { grid-template-columns: 1fr; }
-      main { padding: 28px 0; }
+    a { color: inherit; }
+    button, input, textarea { font: inherit; }
+    .shell { width: min(1180px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 52px; }
+    .nav { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 28px; }
+    .brand { display: flex; align-items: center; gap: 12px; font-weight: 900; letter-spacing: 0; }
+    .mark { width: 36px; height: 36px; border-radius: 8px; background: linear-gradient(135deg, var(--green), var(--cyan)); box-shadow: 0 0 30px rgba(88, 226, 154, .34); }
+    .navlinks { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 13px; font-weight: 700; }
+    .navlinks a { text-decoration: none; padding: 9px 12px; border-radius: 8px; }
+    .navlinks a:hover { background: rgba(255,255,255,.06); color: var(--text); }
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(330px, .9fr);
+      gap: 22px;
+      align-items: stretch;
+      margin-bottom: 18px;
+    }
+    .hero-copy, .trial-panel, .tool-card, .result-panel, .lead-panel {
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(16,34,28,.88), rgba(9,18,15,.88));
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+    .hero-copy { padding: clamp(28px, 5vw, 48px); min-height: 430px; display: flex; flex-direction: column; justify-content: center; }
+    .eyebrow { display: inline-flex; align-items: center; gap: 8px; color: var(--green); font-size: 13px; font-weight: 800; margin-bottom: 18px; }
+    .dot { width: 9px; height: 9px; border-radius: 999px; background: var(--green); box-shadow: 0 0 20px var(--green); }
+    h1 { margin: 0 0 18px; font-size: clamp(38px, 6vw, 78px); line-height: .95; letter-spacing: 0; }
+    .lead { margin: 0 0 28px; color: var(--muted); font-size: clamp(16px, 2vw, 20px); line-height: 1.7; max-width: 760px; }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+    .btn {
+      border: 1px solid transparent;
+      border-radius: 8px;
+      padding: 13px 16px;
+      font-weight: 900;
+      cursor: pointer;
+      min-height: 48px;
+      transition: transform .18s ease, background .18s ease, border-color .18s ease;
+    }
+    .btn:hover { transform: translateY(-1px); }
+    .btn-primary { background: var(--green); color: #04120b; }
+    .btn-secondary { color: var(--text); background: rgba(255,255,255,.05); border-color: var(--line); }
+    .trial-panel { padding: 24px; display: flex; flex-direction: column; gap: 16px; }
+    .quota { display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center; padding: 18px; background: rgba(255,255,255,.04); border: 1px solid var(--line); border-radius: 8px; }
+    .quota strong { display: block; font-size: 15px; margin-bottom: 6px; }
+    .quota span { color: var(--muted); font-size: 13px; }
+    .quota-number { color: var(--gold); font-size: 34px; font-weight: 900; }
+    .mini-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .mini { padding: 14px; border: 1px solid var(--line); border-radius: 8px; background: rgba(255,255,255,.035); }
+    .mini b { color: var(--green); display: block; font-size: 20px; margin-bottom: 4px; }
+    .mini span { color: var(--muted); font-size: 12px; line-height: 1.35; }
+    .section-title { display: flex; align-items: end; justify-content: space-between; gap: 18px; margin: 34px 0 14px; }
+    .section-title h2 { margin: 0; font-size: clamp(24px, 4vw, 38px); }
+    .section-title p { margin: 0; color: var(--muted); line-height: 1.55; max-width: 590px; }
+    .tools { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; align-items: start; }
+    .tool-card { padding: 20px; min-height: 410px; display: flex; flex-direction: column; gap: 14px; }
+    .tool-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+    .icon { width: 42px; height: 42px; border-radius: 8px; display: grid; place-items: center; background: rgba(88,226,154,.12); border: 1px solid rgba(88,226,154,.25); color: var(--green); font-weight: 900; }
+    .tool-card h3 { margin: 0; font-size: 19px; }
+    .tool-card p { margin: 0; color: var(--muted); line-height: 1.55; font-size: 14px; }
+    label { display: grid; gap: 8px; color: var(--muted); font-size: 13px; font-weight: 700; }
+    input, textarea {
+      width: 100%;
+      min-height: 46px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: rgba(2, 7, 5, .5);
+      color: var(--text);
+      padding: 12px;
+      outline: none;
+    }
+    textarea { resize: vertical; min-height: 88px; }
+    input:focus, textarea:focus { border-color: rgba(88,226,154,.62); box-shadow: 0 0 0 3px rgba(88,226,154,.08); }
+    .result-panel { padding: 20px; margin-top: 14px; min-height: 260px; }
+    .result-panel h3 { margin: 0 0 12px; }
+    .result-empty { color: var(--muted); display: grid; place-items: center; min-height: 190px; text-align: center; line-height: 1.6; }
+    .result-list { display: grid; gap: 10px; }
+    .result-item { border: 1px solid var(--line); background: rgba(255,255,255,.035); border-radius: 8px; padding: 12px; color: #dff8ea; line-height: 1.5; }
+    .score { width: 96px; height: 96px; border-radius: 999px; display: grid; place-items: center; background: conic-gradient(var(--green) calc(var(--score) * 1%), rgba(255,255,255,.08) 0); margin-bottom: 14px; }
+    .score span { width: 76px; height: 76px; border-radius: 999px; background: var(--surface); display: grid; place-items: center; font-size: 24px; font-weight: 900; }
+    .checks { display: grid; gap: 8px; margin-top: 12px; }
+    .check { display: grid; grid-template-columns: 24px 1fr; gap: 10px; align-items: start; color: var(--muted); border-bottom: 1px solid rgba(255,255,255,.06); padding-bottom: 8px; }
+    .ok { color: var(--green); }
+    .bad { color: var(--red); }
+    .lead-panel { margin-top: 14px; padding: 20px; display: grid; grid-template-columns: 1fr 1.4fr auto; gap: 12px; align-items: end; }
+    .toast { position: fixed; right: 18px; bottom: 18px; max-width: 360px; padding: 14px 16px; border-radius: 8px; background: #0c2119; border: 1px solid rgba(88,226,154,.35); box-shadow: var(--shadow); color: var(--text); transform: translateY(130%); transition: transform .2s ease; z-index: 10; }
+    .toast.show { transform: translateY(0); }
+    .muted { color: var(--muted); }
+    .loading { opacity: .7; pointer-events: none; }
+    @media (max-width: 980px) {
+      .hero, .tools, .lead-panel { grid-template-columns: 1fr; }
+      .hero-copy { min-height: auto; }
+      .section-title { display: grid; }
+    }
+    @media (max-width: 640px) {
+      .shell { width: min(100% - 22px, 1180px); padding-top: 14px; }
+      .nav { align-items: flex-start; }
+      .navlinks { display: none; }
+      .mini-grid { grid-template-columns: 1fr; }
+      .hero-actions .btn { width: 100%; }
+      .tool-card { min-height: 0; }
     }
   </style>
 </head>
 <body>
-  <main>
-    <nav>
-      <div class="brand"><span class="mark"></span><span>SEO Machine</span></div>
-      <div class="pill">Live workspace</div>
+  <div class="shell">
+    <nav class="nav">
+      <div class="brand"><span class="mark"></span><span>SEO Machine Trial</span></div>
+      <div class="navlinks">
+        <a href="#tools">Công cụ</a>
+        <a href="#lead">Mở giới hạn</a>
+        <a href="/README.md">Tài liệu</a>
+      </div>
     </nav>
 
     <section class="hero">
-      <div>
-        <h1>Content engine for research-led SEO.</h1>
-        <p class="lead">SEO Machine turns topic ideas into research briefs, article drafts, rewrite plans, SEO audits, and publish-ready content workflows for teams that need repeatable organic growth.</p>
-        <div class="actions">
-          <a class="button" href="/README.md">Open README</a>
-          <a class="button secondary" href="https://github.com/hungpixi/seomachine">View Source</a>
+      <div class="hero-copy">
+        <div class="eyebrow"><span class="dot"></span> Bản dùng thử có giới hạn cho người dùng thật</div>
+        <h1>Thử công cụ SEO trước khi xây full SaaS.</h1>
+        <p class="lead">Audit nhanh một URL, tạo content brief từ keyword, sinh title/meta để test intent. Mỗi phiên có quota rõ ràng để người dùng thử được giá trị mà không đốt tài nguyên.</p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#tools">Dùng thử ngay</a>
+          <a class="btn btn-secondary" href="#lead">Xin thêm lượt</a>
         </div>
       </div>
-      <aside class="panel">
-        <div class="metric"><div class="num">26</div><div><strong>Marketing skills</strong><span>Copywriting, CRO, paid ads, SEO audits, schema, email, pricing, and launch support.</span></div></div>
-        <div class="metric"><div class="num">5</div><div><strong>SEO analyzers</strong><span>Search intent, keyword density, content length, readability, and quality scoring.</span></div></div>
-        <div class="metric"><div class="num">10+</div><div><strong>Workflow commands</strong><span>Research, write, rewrite, optimize, publish draft, analyze existing content, and prioritize.</span></div></div>
+      <aside class="trial-panel" data-testid="usage-panel">
+        <div class="quota">
+          <div><strong>Lượt trial còn lại hôm nay</strong><span>Ẩn danh có 3 lượt/ngày. Nhập email để mở 8 lượt/ngày trong phiên này.</span></div>
+          <div class="quota-number" data-testid="quota-number">...</div>
+        </div>
+        <div class="mini-grid">
+          <div class="mini"><b>URL</b><span>Audit title, meta, heading, canonical.</span></div>
+          <div class="mini"><b>Brief</b><span>Outline, intent, câu hỏi, link nội bộ.</span></div>
+          <div class="mini"><b>Meta</b><span>5 title và 5 description copy được.</span></div>
+        </div>
+        <p class="muted">Kết quả trial được tạo nhanh để chứng minh workflow. Bản trả phí sẽ nối thêm DataForSEO, GSC, GA4 và WordPress.</p>
       </aside>
     </section>
 
-    <section class="grid">
-      <article class="card"><h2>Research</h2><p>Map keywords, SERP gaps, competitor angles, and topic clusters before drafting.</p></article>
-      <article class="card"><h2>Write</h2><p>Create long-form SEO articles with brand voice, internal links, meta elements, and clear structure.</p></article>
-      <article class="card"><h2>Optimize</h2><p>Audit drafts with concrete fixes for search intent, readability, headings, density, and conversion.</p></article>
+    <div class="section-title" id="tools">
+      <h2>Ba công cụ trial đầu tiên</h2>
+      <p>Đủ nhỏ để chạy ổn, đủ rõ để người dùng thấy lợi ích trong dưới một phút.</p>
+    </div>
+
+    <section class="tools">
+      <article class="tool-card" data-testid="audit-card">
+        <div class="tool-head"><div><h3>Audit URL</h3><p>Chấm nhanh SEO on-page cơ bản và trả về việc cần sửa.</p></div><div class="icon">01</div></div>
+        <label>URL cần kiểm tra<input data-testid="audit-url" id="audit-url" value="https://seomachine.phamphunguyenhung.com"></label>
+        <button class="btn btn-primary" data-testid="audit-btn" id="audit-btn">Chạy audit</button>
+      </article>
+
+      <article class="tool-card" data-testid="brief-card">
+        <div class="tool-head"><div><h3>Content Brief</h3><p>Tạo outline bài viết, search intent và checklist triển khai.</p></div><div class="icon">02</div></div>
+        <label>Keyword chính<input data-testid="brief-keyword" id="brief-keyword" value="cách tối ưu content SEO"></label>
+        <button class="btn btn-primary" data-testid="brief-btn" id="brief-btn">Tạo brief</button>
+      </article>
+
+      <article class="tool-card" data-testid="meta-card">
+        <div class="tool-head"><div><h3>Title & Meta</h3><p>Sinh biến thể title và description để test CTR.</p></div><div class="icon">03</div></div>
+        <label>Chủ đề<textarea data-testid="meta-topic" id="meta-topic">seo cho website bán hàng</textarea></label>
+        <button class="btn btn-primary" data-testid="meta-btn" id="meta-btn">Sinh meta</button>
+      </article>
     </section>
 
-    <footer>phamphunguyenhung.com / seomachine deployment</footer>
-  </main>
+    <section class="result-panel" data-testid="result-panel">
+      <h3>Kết quả</h3>
+      <div id="result" class="result-empty">Chọn một công cụ phía trên để xem kết quả trial.</div>
+    </section>
+
+    <section class="lead-panel" id="lead">
+      <label>Email dùng thử<input data-testid="lead-email" id="lead-email" placeholder="ban@congty.com"></label>
+      <label>Mục tiêu của bạn<input data-testid="lead-goal" id="lead-goal" placeholder="Muốn audit 10 bài blog đang có"></label>
+      <button class="btn btn-secondary" data-testid="lead-btn" id="lead-btn">Mở 8 lượt/ngày</button>
+    </section>
+  </div>
+
+  <div class="toast" id="toast" data-testid="toast"></div>
+
+  <script>
+    const state = { email: localStorage.getItem('sm_trial_email') || '' };
+    const $ = (id) => document.getElementById(id);
+
+    function toast(message) {
+      const el = $('toast');
+      el.textContent = message;
+      el.classList.add('show');
+      setTimeout(() => el.classList.remove('show'), 2800);
+    }
+
+    async function api(path, payload) {
+      const response = await fetch(path, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json', ...(state.email ? { 'x-trial-email': state.email } : {}) },
+        body: JSON.stringify({ ...payload, email: state.email })
+      });
+      const body = await response.json();
+      if (!response.ok) throw new Error(body.error || 'Có lỗi xảy ra.');
+      if (body.usage) updateQuota(body.usage.remaining);
+      return body.result || body;
+    }
+
+    function updateQuota(value) {
+      document.querySelector('[data-testid="quota-number"]').textContent = value;
+    }
+
+    async function loadUsage() {
+      const response = await fetch('/api/trial/usage');
+      const body = await response.json();
+      updateQuota(body.remaining);
+    }
+
+    function setLoading(button, loading) {
+      button.classList.toggle('loading', loading);
+      button.textContent = loading ? 'Đang chạy...' : button.dataset.originalText;
+    }
+
+    function renderList(title, items) {
+      return `<h4>${title}</h4><div class="result-list">${items.map(item => `<div class="result-item">${escapeHtml(item)}</div>`).join('')}</div>`;
+    }
+
+    function escapeHtml(text) {
+      return String(text).replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[char]));
+    }
+
+    function renderAudit(result) {
+      $('result').className = '';
+      $('result').innerHTML = `
+        <div class="score" style="--score:${result.score}"><span>${result.score}</span></div>
+        <h3>${escapeHtml(result.summary)}</h3>
+        <p class="muted">${escapeHtml(result.url)} · HTTP ${result.status}</p>
+        <div class="checks">
+          ${result.checks.map(check => `
+            <div class="check"><b class="${check.ok ? 'ok' : 'bad'}">${check.ok ? '✓' : '!'}</b><div><strong>${escapeHtml(check.label)}</strong><br>${escapeHtml(check.detail)}</div></div>
+          `).join('')}
+        </div>
+        ${result.nextActions.length ? renderList('Việc nên làm tiếp', result.nextActions) : ''}
+      `;
+    }
+
+    function renderBrief(result) {
+      $('result').className = '';
+      $('result').innerHTML = `
+        <h3>Brief cho: ${escapeHtml(result.keyword)}</h3>
+        <p class="muted"><strong>Intent:</strong> ${escapeHtml(result.intent)} · ${escapeHtml(result.angle)}</p>
+        ${renderList('Outline đề xuất', result.outline)}
+        ${renderList('Câu hỏi nên trả lời', result.questions)}
+        ${renderList('Internal links', result.internalLinks)}
+      `;
+    }
+
+    function renderMeta(result) {
+      $('result').className = '';
+      $('result').innerHTML = `${renderList('Title gợi ý', result.titles)}${renderList('Meta description', result.descriptions)}`;
+    }
+
+    async function runTool(button, path, payload, renderer) {
+      button.dataset.originalText ||= button.textContent;
+      setLoading(button, true);
+      try {
+        renderer(await api(path, payload()));
+      } catch (error) {
+        toast(error.message);
+        $('result').className = 'result-empty';
+        $('result').textContent = error.message;
+      } finally {
+        setLoading(button, false);
+      }
+    }
+
+    $('audit-btn').addEventListener('click', () => runTool($('audit-btn'), '/api/trial/audit', () => ({ url: $('audit-url').value }), renderAudit));
+    $('brief-btn').addEventListener('click', () => runTool($('brief-btn'), '/api/trial/brief', () => ({ keyword: $('brief-keyword').value }), renderBrief));
+    $('meta-btn').addEventListener('click', () => runTool($('meta-btn'), '/api/trial/meta', () => ({ topic: $('meta-topic').value }), renderMeta));
+    $('lead-btn').addEventListener('click', async () => {
+      try {
+        const email = $('lead-email').value.trim().toLowerCase();
+        await api('/api/leads/request-access', { email, goal: $('lead-goal').value || 'Dùng thử SEO Machine' });
+        state.email = email;
+        localStorage.setItem('sm_trial_email', email);
+        updateQuota(8);
+        toast('Đã mở giới hạn email trial cho phiên này.');
+      } catch (error) {
+        toast(error.message);
+      }
+    });
+
+    loadUsage().catch(() => updateQuota('3'));
+  </script>
 </body>
 </html>

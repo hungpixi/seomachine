@@ -84,6 +84,8 @@ build/
 .coverage
 htmlcov/
 .pytest_cache/
+test-results/
+.data-*/
 
 # Secrets and sensitive data
 secrets/

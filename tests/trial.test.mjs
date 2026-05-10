@@ -14,7 +14,7 @@ before(async () => {
   dataDir = await mkdtemp(join(tmpdir(), 'seomachine-trial-'));
   child = spawn(process.execPath, ['server.js'], {
     cwd: process.cwd(),
-    env: { ...process.env, PORT: String(port), DATA_DIR: dataDir },
+    env: { ...process.env, PORT: String(port), DATA_DIR: dataDir, OPENAI_API_KEY: '', NINEROUTER_API_KEY: '', ROUTER_API_KEY: '' },
     stdio: 'ignore'
   });
 
@@ -44,6 +44,7 @@ test('trial meta endpoint returns useful options and quota', async () => {
   const body = await response.json();
   assert.equal(body.result.titles.length, 5);
   assert.ok(body.usage.remaining >= 0);
+  assert.equal(body.usage.limit, 5);
 });
 
 test('trial brief endpoint builds outline', async () => {
@@ -56,4 +57,35 @@ test('trial brief endpoint builds outline', async () => {
   const body = await response.json();
   assert.ok(body.result.outline.length >= 6);
   assert.ok(body.result.meta.titles.length === 5);
+});
+
+test('daily machine limit cannot be bypassed with a different email', async () => {
+  const headers = { 'content-type': 'application/json', cookie: 'sm_trial=limit-test-machine' };
+  for (let index = 0; index < 5; index += 1) {
+    const response = await fetch(`${base}/api/trial/meta`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ topic: `seo security ${index}`, email: `user${index}@example.com` })
+    });
+    assert.equal(response.status, 200);
+  }
+
+  const blocked = await fetch(`${base}/api/trial/meta`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({ topic: 'seo security blocked', email: 'fresh@example.com' })
+  });
+  assert.equal(blocked.status, 429);
+  const body = await blocked.json();
+  assert.equal(body.limit, 5);
+  assert.equal(body.remaining, 0);
+});
+
+test('cross-origin API posts are rejected', async () => {
+  const response = await fetch(`${base}/api/trial/meta`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', origin: 'https://evil.example' },
+    body: JSON.stringify({ topic: 'seo' })
+  });
+  assert.equal(response.status, 403);
 });

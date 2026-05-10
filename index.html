@@ -154,7 +154,7 @@
       <div class="hero-copy">
         <div class="eyebrow"><span class="dot"></span> Bản dùng thử có giới hạn cho người dùng thật</div>
         <h1>Thử công cụ SEO trước khi xây full SaaS.</h1>
-        <p class="lead">Audit nhanh một URL, tạo content brief từ keyword, sinh title/meta để test intent. Mỗi phiên có quota rõ ràng để người dùng thử được giá trị mà không đốt tài nguyên.</p>
+        <p class="lead">Audit nhanh một URL, tạo content brief từ keyword, sinh title/meta để test intent. Mỗi máy có 5 lượt/ngày để người dùng thử được giá trị mà không đốt tài nguyên.</p>
         <div class="hero-actions">
           <a class="btn btn-primary" href="#tools">Dùng thử ngay</a>
           <a class="btn btn-secondary" href="#lead">Xin thêm lượt</a>
@@ -162,7 +162,7 @@
       </div>
       <aside class="trial-panel" data-testid="usage-panel">
         <div class="quota">
-          <div><strong>Lượt trial còn lại hôm nay</strong><span>Ẩn danh có 3 lượt/ngày. Nhập email để mở 8 lượt/ngày trong phiên này.</span></div>
+          <div><strong>Lượt trial còn lại hôm nay</strong><span>Mỗi máy có 5 lượt/ngày. Email chỉ dùng để xin tư vấn, không tăng quota.</span></div>
           <div class="quota-number" data-testid="quota-number">...</div>
         </div>
         <div class="mini-grid">
@@ -319,13 +319,13 @@
         state.email = email;
         localStorage.setItem('sm_trial_email', email);
         updateQuota(8);
-        toast('Đã mở giới hạn email trial cho phiên này.');
+        toast('Đã ghi nhận email. Quota vẫn là 5 lượt/ngày mỗi máy.');
       } catch (error) {
         toast(error.message);
       }
     });
 
-    loadUsage().catch(() => updateQuota('3'));
+    loadUsage().catch(() => updateQuota('5'));
   </script>
 </body>
 </html>

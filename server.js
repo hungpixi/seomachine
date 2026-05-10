@@ -11,8 +11,7 @@ const PORT = Number(process.env.PORT || 8787);
 const DATA_DIR = process.env.DATA_DIR || join(__dirname, '.data');
 const STORE_PATH = join(DATA_DIR, 'trial-store.json');
 const DAY_MS = 24 * 60 * 60 * 1000;
-const ANON_LIMIT = 3;
-const EMAIL_LIMIT = 8;
+const MACHINE_DAILY_LIMIT = Number(process.env.TRIAL_DAILY_LIMIT || 5);
 const OPENAI_BASE_URL = (process.env.OPENAI_BASE_URL || process.env.CODEX_BASE_URL || 'https://9router.phamphunguyenhung.com/v1').replace(/\/$/, '');
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY || process.env.NINEROUTER_API_KEY || process.env.ROUTER_API_KEY || '';
 const OPENAI_MODEL = process.env.OPENAI_MODEL || process.env.SEO_TRIAL_MODEL || 'cx/gpt-5.3-codex-none';
@@ -50,9 +49,15 @@ function getSession(req, res) {
   const cookies = parseCookies(req.headers.cookie || '');
   const session = cookies.sm_trial || randomUUID();
   if (!cookies.sm_trial) {
-    res.setHeader('Set-Cookie', `sm_trial=${encodeURIComponent(session)}; Path=/; Max-Age=2592000; SameSite=Lax; HttpOnly`);
+    const secure = isSecureRequest(req) ? '; Secure' : '';
+    res.setHeader('Set-Cookie', `sm_trial=${encodeURIComponent(session)}; Path=/; Max-Age=2592000; SameSite=Lax; HttpOnly${secure}`);
   }
   return session;
+}
+
+function isSecureRequest(req) {
+  const host = String(req.headers.host || '');
+  return req.headers['x-forwarded-proto'] === 'https' || (!host.startsWith('127.0.0.1') && !host.startsWith('localhost'));
 }
 
 function ipKey(req) {
@@ -60,15 +65,28 @@ function ipKey(req) {
   return String(raw).split(',')[0].trim();
 }
 
-function identityKey(req, session, email) {
-  const basis = email ? `email:${email.toLowerCase()}` : `anon:${session}:${ipKey(req)}`;
+function identityKey(req, session) {
+  const basis = `machine:${session}:${ipKey(req)}`;
   return createHash('sha256').update(basis).digest('hex').slice(0, 32);
+}
+
+function securityHeaders(extra = {}) {
+  return {
+    'x-content-type-options': 'nosniff',
+    'x-frame-options': 'DENY',
+    'referrer-policy': 'strict-origin-when-cross-origin',
+    'permissions-policy': 'camera=(), microphone=(), geolocation=(), payment=()',
+    'cross-origin-resource-policy': 'same-origin',
+    ...extra
+  };
 }
 
 function json(res, status, body) {
   res.writeHead(status, {
-    'content-type': 'application/json; charset=utf-8',
-    'cache-control': 'no-store'
+    ...securityHeaders({
+      'content-type': 'application/json; charset=utf-8',
+      'cache-control': 'no-store'
+    })
   });
   res.end(JSON.stringify(body));
 }
@@ -84,9 +102,9 @@ async function readJson(req) {
 
 function usageFor(req, session, email) {
   const store = loadStore();
-  const key = `${todayKey()}:${identityKey(req, session, email)}`;
+  const key = `${todayKey()}:${identityKey(req, session)}`;
   const record = store.usage[key] || { count: 0, email: email || null, createdAt: Date.now() };
-  const limit = email ? EMAIL_LIMIT : ANON_LIMIT;
+  const limit = MACHINE_DAILY_LIMIT;
   return { store, key, record, limit, remaining: Math.max(0, limit - record.count) };
 }
 
@@ -348,6 +366,9 @@ async function auditUrl(rawUrl) {
 
 async function handleApi(req, res, path) {
   const session = getSession(req, res);
+  if (!isSameOriginApiRequest(req)) {
+    return json(res, 403, { error: 'Yêu cầu không hợp lệ.' });
+  }
   if (req.method === 'GET' && path === '/api/trial/usage') {
     const state = usageFor(req, session, '');
     return json(res, 200, { limit: state.limit, used: state.record.count, remaining: state.remaining, resetAt: new Date(Date.now() + DAY_MS).toISOString() });
@@ -360,7 +381,7 @@ async function handleApi(req, res, path) {
     const store = loadStore();
     store.leads.push({ email, goal, createdAt: new Date().toISOString(), ip: ipKey(req) });
     saveStore(store);
-    return json(res, 200, { ok: true, message: 'Đã mở giới hạn email trial trong phiên này.', email });
+    return json(res, 200, { ok: true, message: 'Đã ghi nhận email. Mỗi máy vẫn có 5 lượt/ngày.', email });
   }
 
   if (req.method !== 'POST') return json(res, 405, { error: 'Method not allowed' });
@@ -377,12 +398,23 @@ async function handleApi(req, res, path) {
   return json(res, 404, { error: 'Not found' });
 }
 
+function isSameOriginApiRequest(req) {
+  const origin = req.headers.origin;
+  if (!origin) return true;
+  try {
+    const originUrl = new URL(origin);
+    return originUrl.host === req.headers.host;
+  } catch {
+    return false;
+  }
+}
+
 function serveStatic(req, res, pathname) {
   const filePath = pathname === '/' || pathname === '/trial' ? 'index.html' : pathname.slice(1);
   const safePath = resolve(__dirname, filePath);
   if (!safePath.startsWith(resolve(__dirname))) return json(res, 403, { error: 'Forbidden' });
   if (!existsSync(safePath)) {
-    res.writeHead(404, { 'content-type': 'text/plain; charset=utf-8' });
+    res.writeHead(404, securityHeaders({ 'content-type': 'text/plain; charset=utf-8' }));
     return res.end('Not found');
   }
   const type = {
@@ -391,7 +423,7 @@ function serveStatic(req, res, pathname) {
     '.css': 'text/css; charset=utf-8',
     '.js': 'application/javascript; charset=utf-8'
   }[extname(safePath)] || 'text/plain; charset=utf-8';
-  res.writeHead(200, { 'content-type': type, 'cache-control': 'public, max-age=120' });
+  res.writeHead(200, securityHeaders({ 'content-type': type, 'cache-control': 'public, max-age=120' }));
   res.end(readFileSync(safePath));
 }
 

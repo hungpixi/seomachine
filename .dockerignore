@@ -1,0 +1,10 @@
+.git
+.github
+.claude
+.antigravity
+__pycache__
+*.pyc
+.env
+.env.*
+data_sources/cache
+data_sources/config

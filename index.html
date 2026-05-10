@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SEO Machine | Content Research Workspace</title>
+  <meta name="description" content="SEO Machine helps research, plan, write, and optimize long-form SEO content with structured workflows and analytics-ready modules.">
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0a0f14;
+      --panel: #101922;
+      --text: #eef6f8;
+      --muted: #a7b5bb;
+      --line: #22313a;
+      --green: #44d19d;
+      --blue: #4db6ff;
+      --gold: #f4c95d;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: linear-gradient(180deg, #071017 0%, var(--bg) 56%, #050709 100%);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    main { width: min(1120px, calc(100% - 32px)); margin: 0 auto; padding: 48px 0; }
+    nav { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 72px; }
+    .brand { display: flex; align-items: center; gap: 12px; font-weight: 800; letter-spacing: .02em; }
+    .mark { width: 34px; height: 34px; border-radius: 8px; background: linear-gradient(135deg, var(--green), var(--blue)); }
+    .pill { color: var(--green); border: 1px solid rgba(68, 209, 157, .35); padding: 8px 12px; border-radius: 999px; font-size: 13px; }
+    .hero { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(280px, .85fr); gap: 44px; align-items: center; }
+    h1 { margin: 0 0 20px; font-size: clamp(42px, 7vw, 86px); line-height: .92; letter-spacing: 0; }
+    .lead { color: var(--muted); font-size: clamp(17px, 2vw, 21px); line-height: 1.65; max-width: 720px; margin: 0 0 30px; }
+    .actions { display: flex; flex-wrap: wrap; gap: 12px; }
+    a.button { color: #06120e; background: var(--green); text-decoration: none; font-weight: 800; border-radius: 8px; padding: 14px 18px; }
+    a.secondary { color: var(--text); background: transparent; border: 1px solid var(--line); }
+    .panel { background: rgba(16, 25, 34, .82); border: 1px solid var(--line); border-radius: 8px; padding: 24px; box-shadow: 0 18px 50px rgba(0,0,0,.25); }
+    .metric { display: grid; grid-template-columns: 42px 1fr; gap: 14px; padding: 16px 0; border-bottom: 1px solid var(--line); }
+    .metric:last-child { border-bottom: 0; }
+    .num { color: var(--gold); font-size: 26px; font-weight: 900; }
+    .metric strong { display: block; margin-bottom: 4px; }
+    .metric span { color: var(--muted); line-height: 1.45; }
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 52px; }
+    .card { background: rgba(255,255,255,.035); border: 1px solid var(--line); border-radius: 8px; padding: 22px; min-height: 170px; }
+    .card h2 { margin: 0 0 10px; font-size: 18px; }
+    .card p { margin: 0; color: var(--muted); line-height: 1.55; }
+    footer { color: #718189; font-size: 13px; margin-top: 52px; padding-top: 22px; border-top: 1px solid var(--line); }
+    @media (max-width: 860px) {
+      nav { margin-bottom: 44px; }
+      .hero, .grid { grid-template-columns: 1fr; }
+      main { padding: 28px 0; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <nav>
+      <div class="brand"><span class="mark"></span><span>SEO Machine</span></div>
+      <div class="pill">Live workspace</div>
+    </nav>
+
+    <section class="hero">
+      <div>
+        <h1>Content engine for research-led SEO.</h1>
+        <p class="lead">SEO Machine turns topic ideas into research briefs, article drafts, rewrite plans, SEO audits, and publish-ready content workflows for teams that need repeatable organic growth.</p>
+        <div class="actions">
+          <a class="button" href="/README.md">Open README</a>
+          <a class="button secondary" href="https://github.com/hungpixi/seomachine">View Source</a>
+        </div>
+      </div>
+      <aside class="panel">
+        <div class="metric"><div class="num">26</div><div><strong>Marketing skills</strong><span>Copywriting, CRO, paid ads, SEO audits, schema, email, pricing, and launch support.</span></div></div>
+        <div class="metric"><div class="num">5</div><div><strong>SEO analyzers</strong><span>Search intent, keyword density, content length, readability, and quality scoring.</span></div></div>
+        <div class="metric"><div class="num">10+</div><div><strong>Workflow commands</strong><span>Research, write, rewrite, optimize, publish draft, analyze existing content, and prioritize.</span></div></div>
+      </aside>
+    </section>
+
+    <section class="grid">
+      <article class="card"><h2>Research</h2><p>Map keywords, SERP gaps, competitor angles, and topic clusters before drafting.</p></article>
+      <article class="card"><h2>Write</h2><p>Create long-form SEO articles with brand voice, internal links, meta elements, and clear structure.</p></article>
+      <article class="card"><h2>Optimize</h2><p>Audit drafts with concrete fixes for search intent, readability, headings, density, and conversion.</p></article>
+    </section>
+
+    <footer>phamphunguyenhung.com / seomachine deployment</footer>
+  </main>
+</body>
+</html>
